@@ -9,13 +9,10 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
+
+	hashutility.SetupRoutes(mux)
+
 	srv := server.New(mux, ":3333")
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		endpoint := r.URL.Query().Get("endpoint")
-		w.Write([]byte(hashutility.GetNextHashSeq(endpoint)))
-	})
-
 	err := srv.ListenAndServe()
 
 	if err != nil {
