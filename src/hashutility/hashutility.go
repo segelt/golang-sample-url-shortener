@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 )
 
-func GetNextHashSeq(text string) string {
+func getNextHashSeq(text string) string {
 	hash := md5.Sum([]byte(text))
 	encodedstr := hex.EncodeToString(hash[:])
 	return encodedstr[:6]

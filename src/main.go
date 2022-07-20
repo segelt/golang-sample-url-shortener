@@ -10,7 +10,8 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	hashutility.SetupRoutes(mux)
+	hashpage := hashutility.NewHashPage()
+	hashpage.SetupRoutes(mux)
 
 	srv := server.New(mux, ":3333")
 	err := srv.ListenAndServe()

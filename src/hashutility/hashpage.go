@@ -2,20 +2,32 @@ package hashutility
 
 import "net/http"
 
-func ParseHashRequest(w http.ResponseWriter, r *http.Request) {
+type Handlers struct {
+	internalstorage map[string]bool
+}
+
+func NewHashPage() (h *Handlers) {
+	hashPage := new(Handlers)
+
+	hashPage.internalstorage = make(map[string]bool)
+	return hashPage
+}
+
+func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 	endpoint := r.URL.Query().Get("endpoint")
 
 	if endpoint == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("No endpoint url given"))
+	} else {
+		nextseq := getNextHashSeq(endpoint)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte(nextseq))
 	}
 
-	nextseq := GetNextHashSeq(endpoint)
-
-	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte(nextseq))
 }
 
-func SetupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", ParseHashRequest)
+func (h *Handlers) SetupRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/", h.parseHashRequest)
 }
