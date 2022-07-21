@@ -22,8 +22,16 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	user.HashPassword(user.Password)
 
-	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte(fmt.Sprintf("User registration complete. username: %s .", user.Name)))
+	err = AddUserToStore(&user)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	} else {
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte(fmt.Sprintf("User registration complete. username: %s .", user.Name)))
+	}
+
 }
 
 func GenerateToken(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +66,7 @@ func GenerateToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetupRoutes(mux *http.ServeMux) {
+	SetupUserManager()
 	mux.HandleFunc("/register", RegisterUser)
 	mux.HandleFunc("/login", GenerateToken)
 }
