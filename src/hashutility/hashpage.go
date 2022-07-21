@@ -27,13 +27,18 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("No endpoint url given"))
 	} else {
 		// Check if the hash of this endpoint is already defined
+
+		h.lock.RLock()
 		val, ok := h.internalstorage[endpoint]
+		h.lock.RUnlock()
 
 		if ok {
 			w.WriteHeader(http.StatusAccepted)
 			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", val)))
 		} else {
 			nextseq := getNextHashSeq(endpoint)
+			h.lock.Lock()
+			defer h.lock.Unlock()
 			h.internalstorage[endpoint] = nextseq
 
 			w.WriteHeader(http.StatusAccepted)
