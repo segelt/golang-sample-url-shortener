@@ -22,8 +22,14 @@ func SetupUserManager() {
 // }
 
 // Not implemented yet
-func GetUserFromStorage(username string) (*models.User, error) {
-	return nil, errors.New("not implemented yet")
+func GetUserFromStorage(email string) (*models.User, error) {
+	for _, v := range instantiated.users {
+		if v.Email == email {
+			return v, nil
+		}
+	}
+
+	return nil, errors.New("user not found")
 }
 
 func AddUserToStore(user *models.User) error {

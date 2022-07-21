@@ -18,7 +18,7 @@ func (user *User) HashPassword(password string) {
 }
 func (user *User) CheckPassword(providedPassword string) error {
 	compareResult := hashutility.CompareHashAndPassword(providedPassword, user.Password)
-	if compareResult {
+	if !compareResult {
 		return errors.New("given password does not match for the current user")
 	} else {
 		return nil
