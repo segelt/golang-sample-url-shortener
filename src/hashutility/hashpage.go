@@ -1,15 +1,21 @@
 package hashutility
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+	"sync"
+)
 
 type Handlers struct {
-	internalstorage map[string]bool
+	internalstorage map[string]string
+	lock            sync.RWMutex
 }
 
 func NewHashPage() (h *Handlers) {
 	hashPage := new(Handlers)
 
-	hashPage.internalstorage = make(map[string]bool)
+	hashPage.internalstorage = make(map[string]string)
+	// hashPage.lock = sync.RWMutex{}
 	return hashPage
 }
 
@@ -20,10 +26,19 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("No endpoint url given"))
 	} else {
-		nextseq := getNextHashSeq(endpoint)
+		// Check if the hash of this endpoint is already defined
+		val, ok := h.internalstorage[endpoint]
 
-		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte(nextseq))
+		if ok {
+			w.WriteHeader(http.StatusAccepted)
+			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", val)))
+		} else {
+			nextseq := getNextHashSeq(endpoint)
+			h.internalstorage[endpoint] = nextseq
+
+			w.WriteHeader(http.StatusAccepted)
+			w.Write([]byte(fmt.Sprintf("value: %s -- added to map.", nextseq)))
+		}
 	}
 
 }
