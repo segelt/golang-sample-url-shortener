@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	Name     string
-	Username string
-	Email    string
-	Password string
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (user *User) HashPassword(password string) {
