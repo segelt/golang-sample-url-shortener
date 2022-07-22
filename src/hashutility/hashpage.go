@@ -2,6 +2,7 @@ package hashutility
 
 import (
 	"fmt"
+	"gobasictinyurl/src/middlewares"
 	"net/http"
 	"sync"
 )
@@ -49,5 +50,5 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) SetupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", h.parseHashRequest)
+	mux.HandleFunc("/", middlewares.LogMiddleware(h.parseHashRequest))
 }
