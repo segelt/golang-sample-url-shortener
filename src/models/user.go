@@ -3,13 +3,18 @@ package models
 import (
 	"errors"
 	"gobasictinyurl/src/helpers"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type User struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID         string `sql:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Name       string `json:"name"`
+	Username   string `json:"username" gorm:"unique"`
+	Email      string `json:"email" gorm:"unique"`
+	Password   string `json:"password"`
+	UrlEntries []UrlEntry
 }
 
 func (user *User) HashPassword(password string) {
@@ -23,4 +28,9 @@ func (user *User) CheckPassword(providedPassword string) error {
 	} else {
 		return nil
 	}
+}
+
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	user.ID = uuid.NewString()
+	return
 }

@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"gobasictinyurl/src/helpers"
 	"gobasictinyurl/src/middlewares"
+	"gobasictinyurl/src/models"
+	"gobasictinyurl/src/persistence"
 	"net/http"
-	"sync"
 )
 
 type Handlers struct {
-	internalstorage map[string]string
-	lock            sync.RWMutex
+	// internalstorage map[string]string
+	// lock sync.RWMutex
 }
 
 func NewHashPage() (h *Handlers) {
 	hashPage := new(Handlers)
 
-	hashPage.internalstorage = make(map[string]string)
+	// hashPage.internalstorage = make(map[string]string)
 	// hashPage.lock = sync.RWMutex{}
 	return hashPage
 }
@@ -30,19 +31,20 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Check if the hash of this endpoint is already defined
 
-		h.lock.RLock()
-		val, ok := h.internalstorage[endpoint]
-		h.lock.RUnlock()
+		var urlEntry models.UrlEntry
+		record := persistence.Instance.Where("ID = ?", endpoint).First(&urlEntry)
 
-		if ok {
+		if record.Error == nil {
 			w.WriteHeader(http.StatusAccepted)
-			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", val)))
+			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", urlEntry.Value)))
 		} else {
 			nextseq := helpers.GetNextHashSeq(endpoint)
 			// nextseq := getNextHashSeq(endpoint)
-			h.lock.Lock()
-			defer h.lock.Unlock()
-			h.internalstorage[endpoint] = nextseq
+			// h.lock.Lock()
+			// defer h.lock.Unlock()
+			// h.internalstorage[endpoint] = nextseq
+
+			persistence.Instance.Create(&models.UrlEntry{ID: endpoint, Value: nextseq, UserID: "not implemented yet"})
 
 			w.WriteHeader(http.StatusAccepted)
 			w.Write([]byte(fmt.Sprintf("value: %s -- added to map.", nextseq)))
