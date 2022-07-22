@@ -20,19 +20,13 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 	expirationTime := time.Now().Add(1 * time.Hour)
 
 	claims := JWTClaim{
-		Username: "bar",
-		Email:    "test",
+		Username: username,
+		Email:    email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "tinyurlgolangimplementation",
 		},
 	}
-
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	// 	"email":    email,
-	// 	"username": username,
-	// 	"exp":      expirationTime.Unix(),
-	// })
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err = token.SignedString(jwtKey)
 	return
