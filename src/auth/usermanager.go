@@ -6,10 +6,22 @@ import (
 	"gobasictinyurl/src/persistence"
 )
 
-func GetUserFromStorage(email string) (*models.User, error) {
+func GetUserFromStorageByEmail(email string) (*models.User, error) {
 	var user models.User
 
 	record := persistence.Instance.Where("email = ?", email).First(&user)
+
+	if record.Error != nil {
+		return nil, errors.New("user not found")
+	} else {
+		return &user, nil
+	}
+}
+
+func GetUserFromStorageEagerById(userid string) (*models.User, error) {
+	var user models.User
+
+	record := persistence.Instance.Preload("UrlEntries").Where("id = ?", userid).First(&user)
 
 	if record.Error != nil {
 		return nil, errors.New("user not found")

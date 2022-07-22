@@ -42,7 +42,7 @@ func GenerateToken(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	user, err := GetUserFromStorage(request.Email)
+	user, err := GetUserFromStorageByEmail(request.Email)
 
 	if err != nil {
 		panic(err)
