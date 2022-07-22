@@ -40,8 +40,8 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 		} else {
 			nextseq := helpers.GetNextHashSeq(endpoint)
 
-			//TODO : Handling errors on creation
-			persistence.Instance.Create(&models.UrlEntry{ID: endpoint, Value: nextseq, UserID: "not implemented yet"})
+			userid := r.Context().Value("userid").(string)
+			persistence.Instance.Create(&models.UrlEntry{ID: endpoint, Value: nextseq, UserID: userid})
 
 			w.WriteHeader(http.StatusAccepted)
 			w.Write([]byte(fmt.Sprintf("value: %s -- added to map.", nextseq)))
