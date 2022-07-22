@@ -52,5 +52,5 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) SetupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", middlewares.MultipleMiddleware(h.parseHashRequest, middlewares.Auth))
+	mux.HandleFunc("/", middlewares.MultipleMiddleware(h.parseHashRequest, middlewares.LogMiddleware, middlewares.Auth))
 }
