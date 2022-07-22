@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"fmt"
 	"gobasictinyurl/src/auth"
 	"net/http"
@@ -17,13 +18,16 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 		} else {
 			jwtToken := authHeader[1]
 
-			err := auth.ValidateToken(jwtToken)
+			contextInfo, err := auth.ValidateToken(jwtToken)
 
 			if err != nil {
 				fmt.Println(err)
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write([]byte("Unauthorized"))
 			} else {
+				b := context.WithValue(r.Context(), "email", contextInfo.Email)
+				b = context.WithValue(b, "username", contextInfo.Username)
+				r = r.WithContext(b)
 				next(w, r)
 			}
 		}

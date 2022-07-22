@@ -16,6 +16,11 @@ type JWTClaim struct {
 	jwt.RegisteredClaims
 }
 
+type ContextInfo struct {
+	Username string
+	Email    string
+}
+
 func GenerateJWT(email string, username string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 
@@ -32,7 +37,7 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 	return
 }
 
-func ValidateToken(signedToken string) (err error) {
+func ValidateToken(signedToken string) (*ContextInfo, error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&JWTClaim{},
@@ -42,29 +47,28 @@ func ValidateToken(signedToken string) (err error) {
 	)
 
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*JWTClaim)
 	if !ok {
 		err = errors.New("couldn't parse claims")
-		return
+		return nil, err
 	}
 
 	if token.Valid {
 		fmt.Printf("Token is valid. Username: %s Expires at: %s", claims.Username, claims.ExpiresAt)
-		return nil
+		return &ContextInfo{Username: claims.Username, Email: claims.Email}, err
 	}
 
 	if errors.Is(err, jwt.ErrTokenMalformed) {
 		err = errors.New("invalid token format")
-		return
+		return nil, err
 	} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
 		err = errors.New("token is either expired or not active yet")
 	} else {
 		fmt.Println("Couldn't handle this token:", err)
 	}
 
-	return
-
+	return nil, err
 }
