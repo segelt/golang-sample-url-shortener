@@ -54,7 +54,7 @@ func GenerateToken(w http.ResponseWriter, r *http.Request) {
 		panic(credentialError)
 	}
 
-	tokenString, err := GenerateJWT(user.Email, user.Username)
+	tokenString, err := GenerateJWT(user.ID, user.Email, user.Username)
 
 	if err != nil {
 		panic(err)

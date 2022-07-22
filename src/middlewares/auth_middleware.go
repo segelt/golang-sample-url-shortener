@@ -27,6 +27,7 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 			} else {
 				b := context.WithValue(r.Context(), "email", contextInfo.Email)
 				b = context.WithValue(b, "username", contextInfo.Username)
+				b = context.WithValue(b, "userid", contextInfo.UserID)
 				r = r.WithContext(b)
 				next(w, r)
 			}

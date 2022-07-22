@@ -19,9 +19,10 @@ type JWTClaim struct {
 type ContextInfo struct {
 	Username string
 	Email    string
+	UserID   string
 }
 
-func GenerateJWT(email string, username string) (tokenString string, err error) {
+func GenerateJWT(userid string, email string, username string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 
 	claims := JWTClaim{
@@ -30,6 +31,7 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "tinyurlgolangimplementation",
+			Subject:   userid,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -58,7 +60,7 @@ func ValidateToken(signedToken string) (*ContextInfo, error) {
 
 	if token.Valid {
 		fmt.Printf("Token is valid. Username: %s Expires at: %s", claims.Username, claims.ExpiresAt)
-		return &ContextInfo{Username: claims.Username, Email: claims.Email}, err
+		return &ContextInfo{UserID: claims.Subject, Username: claims.Username, Email: claims.Email}, err
 	}
 
 	if errors.Is(err, jwt.ErrTokenMalformed) {
