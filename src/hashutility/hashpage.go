@@ -39,11 +39,8 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", urlEntry.Value)))
 		} else {
 			nextseq := helpers.GetNextHashSeq(endpoint)
-			// nextseq := getNextHashSeq(endpoint)
-			// h.lock.Lock()
-			// defer h.lock.Unlock()
-			// h.internalstorage[endpoint] = nextseq
 
+			//TODO : Handling errors on creation
 			persistence.Instance.Create(&models.UrlEntry{ID: endpoint, Value: nextseq, UserID: "not implemented yet"})
 
 			w.WriteHeader(http.StatusAccepted)

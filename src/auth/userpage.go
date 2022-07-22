@@ -66,7 +66,6 @@ func GenerateToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetupRoutes(mux *http.ServeMux) {
-	SetupUserManager()
 	mux.HandleFunc("/register", RegisterUser)
 	mux.HandleFunc("/login", GenerateToken)
 }

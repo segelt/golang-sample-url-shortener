@@ -3,43 +3,23 @@ package auth
 import (
 	"errors"
 	"gobasictinyurl/src/models"
+	"gobasictinyurl/src/persistence"
 )
 
-type UserManager struct {
-	users []*models.User
-}
-
-var instantiated *UserManager = nil
-
-func SetupUserManager() {
-	if instantiated == nil {
-		instantiated = &UserManager{users: []*models.User{}}
-	}
-}
-
-// func (store *UserManager) NewUserStore() *UserManager {
-// 	return &UserManager{users: []*models.User{}}
-// }
-
-// Not implemented yet
 func GetUserFromStorage(email string) (*models.User, error) {
-	for _, v := range instantiated.users {
-		if v.Email == email {
-			return v, nil
-		}
-	}
+	var user models.User
 
-	return nil, errors.New("user not found")
+	record := persistence.Instance.Where("email = ?", email).First(&user)
+
+	if record.Error != nil {
+		return nil, errors.New("user not found")
+	} else {
+		return &user, nil
+	}
 }
 
 func AddUserToStore(user *models.User) error {
-	for _, v := range instantiated.users {
-		if v.Username == user.Username {
-			return errors.New("user already exists")
-		}
-	}
+	record := persistence.Instance.Create(&user)
 
-	instantiated.users = append(instantiated.users, user)
-
-	return nil
+	return record.Error
 }
