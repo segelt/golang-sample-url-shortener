@@ -1,4 +1,4 @@
-package hashutility
+package helpers
 
 import (
 	"crypto/md5"
@@ -16,7 +16,7 @@ func CompareHashAndPassword(providedPassword string, existingHash string) bool {
 	return hashedPassword == existingHash
 }
 
-func getNextHashSeq(text string) string {
+func GetNextHashSeq(text string) string {
 	encodedstr := HashStr(text)
 	return encodedstr[:6]
 }

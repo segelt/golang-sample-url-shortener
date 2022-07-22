@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"gobasictinyurl/src/hashutility"
+	"gobasictinyurl/src/helpers"
 )
 
 type User struct {
@@ -13,11 +13,11 @@ type User struct {
 }
 
 func (user *User) HashPassword(password string) {
-	hashedPassword := hashutility.HashStr(password)
+	hashedPassword := helpers.HashStr(password)
 	user.Password = hashedPassword
 }
 func (user *User) CheckPassword(providedPassword string) error {
-	compareResult := hashutility.CompareHashAndPassword(providedPassword, user.Password)
+	compareResult := helpers.CompareHashAndPassword(providedPassword, user.Password)
 	if !compareResult {
 		return errors.New("given password does not match for the current user")
 	} else {

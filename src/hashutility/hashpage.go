@@ -2,6 +2,8 @@ package hashutility
 
 import (
 	"fmt"
+	"gobasictinyurl/src/helpers"
+	"gobasictinyurl/src/middlewares"
 	"net/http"
 	"sync"
 )
@@ -36,7 +38,8 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusAccepted)
 			w.Write([]byte(fmt.Sprintf("value: %s -- retrieved from map.", val)))
 		} else {
-			nextseq := getNextHashSeq(endpoint)
+			nextseq := helpers.GetNextHashSeq(endpoint)
+			// nextseq := getNextHashSeq(endpoint)
 			h.lock.Lock()
 			defer h.lock.Unlock()
 			h.internalstorage[endpoint] = nextseq
@@ -49,5 +52,5 @@ func (h *Handlers) parseHashRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) SetupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", h.parseHashRequest)
+	mux.HandleFunc("/", middlewares.MultipleMiddleware(h.parseHashRequest, middlewares.Auth))
 }
