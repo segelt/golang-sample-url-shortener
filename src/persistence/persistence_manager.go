@@ -6,13 +6,16 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Instance *gorm.DB
 var dbError error
 
 func Connect(connectionString string) {
-	Instance, dbError = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
+	Instance, dbError = gorm.Open(postgres.Open(connectionString), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if dbError != nil {
 		log.Fatal(dbError)
 		panic("Cannot connect to DB")
